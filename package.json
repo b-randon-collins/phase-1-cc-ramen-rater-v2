@@ -4,6 +4,7 @@
   "description": "practice fetch requests, using an API, responding to user events, updating the dom",
   "main": "index.js",
   "scripts": {
+    "start": "npx reload",
     "test": "vitest --run --environment happy-dom"
   },
   "repository": {
