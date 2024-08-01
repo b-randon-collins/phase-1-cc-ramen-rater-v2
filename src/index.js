@@ -1,33 +1,18 @@
 // index.js
 
-const handleClick = (image) => {
-  const id = String(image.id);
+const handleClick = (ramen) => {
+  const detailImg = document.querySelector(".detail-image");
+  const detailName = document.querySelector(".name");
+  const detailRestaurant = document.querySelector(".restaurant");
+  const detailRating = document.querySelector("#rating-display");
+  const detailComment = document.querySelector("#comment-display");
 
-  fetch(`http://localhost:3000/ramens/${id}`)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then((ramen) => {
-      const detailImg = document.querySelector(".detail-image");
-      const detailName = document.querySelector(".name");
-      const detailRestaurant = document.querySelector(".restaurant");
-      const detailRating = document.querySelector("#rating-display");
-      const detailComment = document.querySelector("#comment-display");
-
-      detailImg.src = ramen.image;
-      detailName.textContent = ramen.name;
-      detailRestaurant.textContent = ramen.restaurant;
-      detailRating.textContent = ramen.rating;
-      detailComment.textContent = ramen.comment;
-    })
-    .catch((error) => {
-      console.error("Failed to fetch ramen details:", error);
-    });
+  detailImg.src = ramen.image;
+  detailName.textContent = ramen.name;
+  detailRestaurant.textContent = ramen.restaurant;
+  detailRating.textContent = ramen.rating;
+  detailComment.textContent = ramen.comment;
 };
-
 
 const addSubmitListener = () => {
   const addRamenForm = document.getElementById("new-ramen");
@@ -35,11 +20,17 @@ const addSubmitListener = () => {
   addRamenForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const name = document.getElementById("new-name").value;
-    const restaurant = document.getElementById("new-restaurant").value;
-    const image = document.getElementById("new-image").value;
-    const rating = document.getElementById("new-rating").value;
-    const comment = document.getElementById("new-comment").value;
+    const nameInput = document.getElementById("new-name");
+    const restaurantInput = document.getElementById("new-restaurant");
+    const imageInput = document.getElementById("new-image");
+    const ratingInput = document.getElementById("new-rating");
+    const commentInput = document.getElementById("new-comment");
+
+    const name = nameInput.value;
+    const restaurant = restaurantInput.value;
+    const image = imageInput.value;
+    const rating = ratingInput.value;
+    const comment = commentInput.value;
 
     const ramenData = {
       name: name,
@@ -58,7 +49,6 @@ const addSubmitListener = () => {
         body: JSON.stringify(ramenData),
       });
       const responseData = await response.json();
-      const newRamenId = responseData.id;
 
       const ramenMenu = document.getElementById("ramen-menu");
       if (!ramenMenu) {
@@ -66,11 +56,18 @@ const addSubmitListener = () => {
       }
 
       const img = document.createElement("img");
-      img.src = image;
-      img.id = newRamenId;
-      img.addEventListener("click", () => handleClick(img));
-      ramenMenu.appendChild(img);
+      img.src = responseData.image;
+      img.id = responseData.id;
+      img.addEventListener("click", () => handleClick(responseData));
 
+      ramenMenu.appendChild(img);
+      handleClick(responseData);
+
+      nameInput.value = "";
+      restaurantInput.value = "";
+      imageInput.value = "";
+      ratingInput.value = "";
+      commentInput.value = "";
     } catch (error) {
       console.error("Failed to add new ramen:", error);
     }
@@ -96,12 +93,9 @@ const displayRamens = async () => {
       img.id = ramen.id;
       img.addEventListener("click", () => handleClick(ramen));
       ramenMenu.appendChild(img);
-      
     });
 
-    //select first ramen on load
     handleClick(ramens[0]);
-
   } catch (error) {
     console.error("Failed to fetch ramens:", error);
   }
@@ -117,4 +111,3 @@ export { displayRamens, addSubmitListener, handleClick, main };
 document.addEventListener("DOMContentLoaded", function () {
   main();
 });
-
